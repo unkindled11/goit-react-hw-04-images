@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 
@@ -6,17 +6,14 @@ import styles from './modal.module.css';
 
 const modalRoot = document.getElementById('modal-root');
 
-class Modal extends Component {
-  componentDidMount() {
-    document.addEventListener('keydown', this.closeModal);
-  }
+const Modal = ({ close, children }) => {
+  useEffect(() => {
+    document.addEventListener('keydown', closeModal);
 
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.closeModal);
-  }
+    return () => document.removeEventListener('keydown', closeModal);
+  });
 
-  closeModal = e => {
-    const { close } = this.props;
+  const closeModal = e => {
     if (e.code === 'Escape') {
       close();
       return;
@@ -26,22 +23,16 @@ class Modal extends Component {
     }
   };
 
-  render() {
-    const { closeModal } = this;
-    const { children } = this.props;
-
-    return createPortal(
-      <div className={styles.Overlay} onClick={closeModal}>
-        <div className={styles.Modal}>{children}</div>
-      </div>,
-      modalRoot
-    );
-  }
-}
+  return createPortal(
+    <div className={styles.Overlay} onClick={closeModal}>
+      <div className={styles.Modal}>{children}</div>
+    </div>,
+    modalRoot
+  );
+};
 
 export default Modal;
 
 Modal.propTypes = {
   close: PropTypes.func.isRequired,
-  children: PropTypes.node.isRequired,
 };
