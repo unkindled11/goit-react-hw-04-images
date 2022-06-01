@@ -45,6 +45,7 @@ const ImageFinder = () => {
         }));
       } catch (error) {
         setImages({
+          ...images,
           loading: false,
           error: error.message,
         });
